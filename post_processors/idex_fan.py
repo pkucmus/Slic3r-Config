@@ -15,8 +15,11 @@ logging.basicConfig(
 LOGGER = logging.getLogger("processor")
 
 TOOL_PATTERN = re.compile(rb"^T(?P<tool>\d+)")
-FAN_PATTERN = re.compile(rb"^M106 S(?P<speed>\d{1,3})")
+FAN_PATTERN = re.compile(rb"^M106( P(?P<index>\d+))? S(?P<speed>\d+(?:\.\d+)?)")
 INPUT_FILE_PATH = sys.argv[1]
+
+# configuration
+FAN_INDEXES_TO_EXCLUDE = [3, ]
 
 
 class Processor:
@@ -46,6 +49,12 @@ class Processor:
         """
         match = FAN_PATTERN.match(line)
         if match:
+            index = match.group("index")
+            if index is not None:
+                index = int(index)
+                if index in FAN_INDEXES_TO_EXCLUDE:
+                    LOGGER.debug("Fan excluded")
+                    return line
             line = f"M106 P{self.tool} S{match.group('speed').decode()}\n".encode()
             LOGGER.debug("Set fan for P%s", self.tool)
         return line
