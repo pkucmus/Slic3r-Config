@@ -1,3 +1,1 @@
-# Slic3r-Config
-
-My Slic3r config bundle for my Tarantula, Prusa i3 clone and Hypercube.
+# Prusa Slicer config for V-core 3
